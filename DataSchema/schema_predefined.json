@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "schema": {
+    "columns": {
+      "age": "int64",
+      "sex": "object",
+      "chestpaintype": "object",
+      "restingbp": "float64",
+      "cholesterol": "float64",
+      "fastingbs": "int64",
+      "restingecg": "object",
+      "maxhr": "int64",
+      "exerciseangina": "object",
+      "oldpeak": "float64",
+      "st_slope": "object",
+      "heartdisease": "int64"
+    },
+    "domain_constraints": {
+      "age": { "min": 0, "max": 120 },
+      "restingbp": { "min": 1, "max": 250 },
+      "cholesterol": { "min": 1, "max": 700 },
+      "maxhr": { "min": 40, "max": 250 },
+      "oldpeak": { "min": 0, "max": 10 }
+    },
+    "categorical_allowed": {
+      "sex": ["M", "F"],
+      "chestpaintype": ["ATA", "NAP", "ASY", "TA"],
+      "restingecg": ["Normal", "ST", "LVH"],
+      "exerciseangina": ["Y", "N"],
+      "st_slope": ["Up", "Flat", "Down"],
+      "fastingbs": [0, 1],
+      "heartdisease": [0, 1]
+    }
+  }
+}

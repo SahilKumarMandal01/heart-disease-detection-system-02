@@ -1,0 +1,12 @@
+venv/
+.env
+.vscode/
+main.py
+test_mongodb.py
+Rough/
+logs/
+Artifacts/
+final_model/
+prediction_output/
+aws/
+awscliv2.zip
