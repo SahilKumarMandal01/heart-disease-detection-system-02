@@ -17,7 +17,6 @@ from src.utils.main_utils.utils import (
     save_object,
     write_json_file
 )
-from src.utils.ml_utils.model.estimator import HeartDiseaseModel
 
 from src.entity.config_entity import ModelTrainerConfig
 from src.entity.artifact_entity import (
@@ -55,10 +54,9 @@ class ModelTrainer:
             
             # Initialize DagsHub (Configures MLFLOW_TRACKING_URI & Auth)
             dagshub.init(
-                repo_owner='thesahilmandal', 
-                repo_name='heart-disease-prediction-system-01', 
-                mlflow=True
-            )
+                repo_owner='thesahilmandal',
+                repo_name='heart-disease-detection-system-02', 
+                mlflow=True)
             
             # Set experiment name for organization
             mlflow.set_experiment("Heart Disease Final Train")
@@ -228,23 +226,16 @@ class ModelTrainer:
 
             # Save "standard" model object
             save_object("final_model/model.pkl", best_model)
+            save_object(
+                file_path=self.model_trainer_config.model_file_path,
+                obj=best_model
+            )
 
             logging.info(f"🏆 Best model: {best_model_name}")
             logging.info(f"🔧 Best hyperparameters: {model_report[best_model_name]['best_params']}")
 
-            # Wrap model with preprocessor for final artifact
-            heart_model = HeartDiseaseModel(
-                preprocessor=self.data_transformation_artifact.transformer_file_path,
-                model=best_model
-            )
-            
-            save_object(
-                file_path=self.model_trainer_config.model_file_path,
-                obj=heart_model
-            )
-
             logging.info("🟩 Model training complete.")
-            return heart_model, model_report
+            return best_model, model_report
 
         except Exception as e:
             raise HeartDiseaseException(e, sys)

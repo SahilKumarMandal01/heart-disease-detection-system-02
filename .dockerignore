@@ -1,0 +1,51 @@
+# -------------------------
+# Python cache / compiled files
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# -------------------------
+# Virtual environments (NEVER include them)
+# -------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# -------------------------
+# Jupyter notebooks & caches
+# -------------------------
+*.ipynb
+.ipynb_checkpoints/
+
+# -------------------------
+# Local data & training artifacts not needed for inference container
+# -------------------------
+Artifacts/
+DataSchema/
+logs/
+
+# Optional training/helper scripts to exclude
+push_data.py
+test_mongodb.py
+
+# -------------------------
+# OS/System files
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Git
+# -------------------------
+.git
+.gitignore
+.github/
+
+# -------------------------
+# Secrets (NEVER include)
+# -------------------------
+.env
+*.env

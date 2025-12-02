@@ -9,6 +9,11 @@ import numpy as np
 import streamlit as st
 
 # ---------------------------
+# Detect if running inside Docker
+# ---------------------------
+RUNNING_IN_DOCKER = os.path.exists("/.dockerenv")
+
+# ---------------------------
 # Make project root importable
 # ---------------------------
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -18,7 +23,12 @@ if PROJECT_ROOT not in sys.path:
 # Project-specific imports
 from src.utils.main_utils.utils import load_object
 from src.utils.ml_utils.model.estimator import HeartDiseaseModel
-from src.pipeline.training_pipeline import TrainingPipeline
+
+# Import training pipeline ONLY if not inside Docker
+if not RUNNING_IN_DOCKER:
+    from src.pipeline.training_pipeline import TrainingPipeline
+else:
+    TrainingPipeline = None
 
 
 # ---------------------------
@@ -89,6 +99,10 @@ def load_prediction_service():
 # Train pipeline + reload
 # ---------------------------
 def train_pipeline_and_reload() -> Optional[HeartDiseaseModel]:
+    if RUNNING_IN_DOCKER:
+        st.error("Training is disabled inside Docker runtime.")
+        return None
+
     try:
         st.info("🚀 Starting training pipeline... please wait.")
         pipeline = TrainingPipeline()
@@ -329,14 +343,18 @@ def main():
         st.sidebar.error("❌ Model Not Found")
         allow_training = True
 
-    if st.sidebar.button("🧠 Train Model"):
-        if allow_training:
-            new_service = train_pipeline_and_reload()
-            if new_service:
-                st.session_state["prediction_service"] = new_service
-                st.sidebar.success("✔️ Model Ready")
-        else:
-            st.sidebar.info("ℹ️ Model already exists. Delete files to retrain.")
+    # Disable training inside Docker
+    if RUNNING_IN_DOCKER:
+        st.sidebar.warning("Training is disabled inside Docker runtime.")
+    else:
+        if st.sidebar.button("🧠 Train Model"):
+            if allow_training:
+                new_service = train_pipeline_and_reload()
+                if new_service:
+                    st.session_state["prediction_service"] = new_service
+                    st.sidebar.success("✔️ Model Ready")
+            else:
+                st.sidebar.info("ℹ️ Model already exists. Delete files to retrain.")
 
     st.sidebar.markdown("---")
 
@@ -369,7 +387,7 @@ def main():
             - Uses preprocessor + model from the `final_model/` folder  
             - Supports **single & batch predictions**  
             - Validates inputs before prediction  
-            - Includes **training pipeline trigger** if model files are missing  
+            - Training is fully disabled inside Docker  
             """
         )
         st.json({
