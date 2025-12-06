@@ -1,12 +1,12 @@
 ##############################
 # Stage 1 — Build dependencies
 ##############################
-FROM python:3.12-slim AS builder
+FROM python:3.10-slim AS builder
+# Python 3.10 chosen for maximum ML ecosystem compatibility
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Install build tools only in builder stage
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         gcc \
@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy requirements
 COPY requirements.txt .
 
 # Build wheels for all dependencies
@@ -25,33 +24,38 @@ RUN python -m pip install --upgrade pip wheel setuptools && \
 
 
 ##############################
-# Stage 2 — Final light image
+# Stage 2 — Final minimal image
 ##############################
-FROM python:3.12-slim AS runtime
+FROM python:3.10-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install only runtime dependencies (no compilers!)
+# Install runtime dependencies from wheels
 COPY --from=builder /wheels /wheels
-RUN python -m pip install --upgrade pip && \
-    pip install --no-cache-dir /wheels/*
+RUN pip install --no-cache-dir /wheels/*
 
-
-# Create non-root user
+# Create non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Copy application files
+# Copy application code
 COPY --chown=appuser:appuser streamlit_app.py /app/streamlit_app.py
 COPY --chown=appuser:appuser src/ /app/src/
 COPY --chown=appuser:appuser final_model/ /app/final_model/
 
-# Expose Streamlit port
+# Ensure model directory exists
+RUN mkdir -p /app/final_model
+
 EXPOSE 8501
 
-# Run Streamlit
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+# Streamlit environment (cleaner than long CMD flags)
+ENV STREAMLIT_SERVER_HEADLESS=true \
+    STREAMLIT_SERVER_ENABLECORS=false \
+    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    STREAMLIT_SERVER_PORT=8501
+
+CMD ["streamlit", "run", "streamlit_app.py"]

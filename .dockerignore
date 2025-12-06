@@ -1,51 +1,109 @@
-# -------------------------
-# Python cache / compiled files
-# -------------------------
+# ============================================
+# PYTHON BUILD ARTIFACTS
+# ============================================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pyd
+*.whl
+*.egg-info/
+dist/
+build/
 
-# -------------------------
-# Virtual environments (NEVER include them)
-# -------------------------
+# ============================================
+# VIRTUAL ENVIRONMENTS
+# ============================================
 venv/
 .venv/
 env/
 ENV/
+.virtualenv/
 
-# -------------------------
-# Jupyter notebooks & caches
-# -------------------------
+# ============================================
+# JUPYTER & DEVELOPMENT FILES
+# ============================================
 *.ipynb
 .ipynb_checkpoints/
 
-# -------------------------
-# Local data & training artifacts not needed for inference container
-# -------------------------
-Artifacts/
-DataSchema/
-logs/
+# Exclude local IDE and dev tools
+.vscode/
+.idea/
+*.code-workspace
 
-# Optional training/helper scripts to exclude
+# ============================================
+# LOCAL DATA, LOGS, AND TRAINING ARTIFACTS
+# ============================================
+# (ONLY include final_model/ in the container; ignore training outputs)
+Artifacts/
+logs/
+Rough/
+DataSchema/
+notebooks/
+experiments/
+checkpoints/
+training_runs/
+
+# If you ever generate large intermediate datasets:
+data/
+datasets/
+raw_data/
+processed_data/
+
+# ============================================
+# MODEL FILES (Optional)
+# ============================================
+# IMPORTANT:
+# You DO want to INCLUDE final_model/ in your Docker image
+# because Streamlit needs model.pkl & preprocessor.pkl at runtime.
+# So DO NOT ignore final_model/
+# Uncomment below ONLY if model artifacts are provided separately.
+# final_model/
+
+# ============================================
+# OPTIONAL TRAINING/HELPER SCRIPTS TO EXCLUDE
+# ============================================
 push_data.py
 test_mongodb.py
+train.py
+training_pipeline.py
+debug_*.py
 
-# -------------------------
-# OS/System files
-# -------------------------
+# ============================================
+# OS / SYSTEM FILES
+# ============================================
 .DS_Store
 Thumbs.db
 
-# -------------------------
-# Git
-# -------------------------
+# ============================================
+# GIT / CI FILES
+# ============================================
 .git
 .gitignore
 .github/
 
-# -------------------------
-# Secrets (NEVER include)
-# -------------------------
+# ============================================
+# DOCKER / CONTAINER FILES
+# ============================================
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ============================================
+# ENVIRONMENT / SECRETS (NEVER INCLUDE)
+# ============================================
 .env
 *.env
+.env.*
+secret.*
+config.yaml
+credentials.json
+service_account.json
+
+# ============================================
+# MISC
+# ============================================
+*.zip
+*.tar
+*.tar.gz
+*.log
