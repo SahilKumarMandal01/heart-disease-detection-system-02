@@ -8,3 +8,5 @@ dagshub==0.6.3
 colorama==0.4.6
 python-multipart==0.0.20
 streamlit==1.51.0
+pytest
+mongomock

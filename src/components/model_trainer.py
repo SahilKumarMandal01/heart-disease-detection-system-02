@@ -184,7 +184,7 @@ class ModelTrainer:
     def train_model(
         self, X_train: np.ndarray, y_train: np.ndarray,
         X_test: np.ndarray, y_test: np.ndarray
-    ) -> Tuple[HeartDiseaseModel, Dict]:
+    ):
         try:
             logging.info("🧠 Starting model training...")
 
